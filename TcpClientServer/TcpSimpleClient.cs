@@ -1,4 +1,7 @@
-﻿using System.Net.Sockets;
+﻿using System.IO;
+using System.Net.Sockets;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace TcpClientServer
@@ -12,13 +15,23 @@ namespace TcpClientServer
             this._client = new TcpClient(address, port);
         }
 
-        public string Receive()
+        public DataSend Receive()
         {
+            // Receiving data bytes from server
             var stream = _client.GetStream();
             byte[] buffer = new byte[1024];
             var bytesReceived = stream.Read(buffer, 0, buffer.Length);
 
-            return Encoding.UTF8.GetString(buffer, 0, bytesReceived);
+            // Deserializing bytes
+            IFormatter formatter = new BinaryFormatter();
+            DataSend dataReceived;
+            using (var ms = new MemoryStream(buffer))
+            {
+                dataReceived = formatter.Deserialize(ms) as DataSend;
+            }
+
+            // Returning the result
+            return dataReceived;
         }
     }
 }

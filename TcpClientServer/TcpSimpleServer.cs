@@ -1,6 +1,10 @@
-﻿using System.Net;
+﻿using System;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
-using System.Text;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TcpClientServer
@@ -20,6 +24,7 @@ namespace TcpClientServer
             while (true)
             {
                 var client = _listener.AcceptTcpClient();
+                Log("Client connected.");
 
                 Task.Factory.StartNew(() => this.Proccess(client));
             }
@@ -28,10 +33,42 @@ namespace TcpClientServer
         private void Proccess(TcpClient client)
         {
             var stream = client.GetStream();
-            byte[] data = Encoding.UTF8.GetBytes("Hello from server!");
-            stream.Write(data, 0, data.Length);
+
+            for (int i = 0; i < 1000; i++)
+            {
+                // Creating data to send
+                var dataType = new DataSend()
+                {
+                    Name = "Michau",
+                    PositionX = i,
+                    PositionY = 1000 - i
+                };
+
+                // Serializing data to bytes
+                byte[] data;
+
+                IFormatter formatter = new BinaryFormatter();
+                using (var ms = new MemoryStream())
+                {
+                    formatter.Serialize(ms, dataType);
+                    data = ms.ToArray();
+                }
+
+                // Sending data
+                stream.Write(data, 0, data.Length);
+
+                Log("Data sent.");
+
+                Thread.Sleep(1000);
+            }
+
             stream.Close();
             client.Close();
+        }
+
+        private void Log(string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }
