@@ -1,4 +1,5 @@
-﻿using TcpClientServer;
+﻿using System;
+using TcpClientServer;
 
 namespace ServerConsoleApp
 {
@@ -6,7 +7,11 @@ namespace ServerConsoleApp
     {
         static void Main(string[] args)
         {
-            var server = new TcpSimpleServer(7777);
+            const int port = 7777;
+
+            Console.WriteLine("Starting server...");
+            var server = new TcpSimpleServer(port);
+            Console.WriteLine($"Started listening on port: {port}");
             server.Start();
         }
     }

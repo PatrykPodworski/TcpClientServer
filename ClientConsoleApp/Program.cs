@@ -7,8 +7,13 @@ namespace ClientConsoleApp
     {
         static void Main(string[] args)
         {
-            var client = new TcpSimpleClient("localhost", 7777);
+            const int port = 7777;
+            const string address = "localhost";
+            Console.WriteLine("Starting client...");
+            var client = new TcpSimpleClient(address, port);
+            Console.WriteLine($"Connected to: {address} on port: {port}");
             var message = client.Receive();
+            Console.WriteLine("Message recieved:");
 
             Console.WriteLine(message);
 
