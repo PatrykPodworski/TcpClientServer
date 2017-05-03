@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataSend.cs" />
+    <Compile Include="DataType.cs" />
     <Compile Include="TcpSimpleClient.cs" />
     <Compile Include="TcpSimpleServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

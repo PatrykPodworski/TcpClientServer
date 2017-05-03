@@ -3,7 +3,7 @@
 namespace TcpClientServer
 {
     [Serializable]
-    public class DataSend
+    public class DataType
     {
         public string Name { get; set; }
         public int PositionX { get; set; }

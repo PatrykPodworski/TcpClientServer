@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -12,34 +13,44 @@ namespace TcpClientServer
     public class TcpSimpleServer
     {
         private readonly TcpListener _listener;
+        private readonly int _maxConnections;
+        private readonly List<Task> _processTasks;
 
-        public TcpSimpleServer(int port)
+        public TcpSimpleServer(int port, int maxConnections)
         {
-            this._listener = new TcpListener(IPAddress.Any, port);
+            _listener = new TcpListener(IPAddress.Any, port);
+            _maxConnections = maxConnections;
+            _processTasks = new List<Task>();
         }
 
         public void Start()
         {
             _listener.Start();
-            while (true)
+            while (_processTasks.Count < _maxConnections)
             {
+                // Accepting clients
                 var client = _listener.AcceptTcpClient();
-                Log("Client connected.");
+                int clientId = _processTasks.Count;
 
-                Task.Factory.StartNew(() => this.Proccess(client));
+                Log($"Client {clientId} connected.");
+
+                var task = Task.Factory.StartNew(() => Proccess(client, clientId));
+                _processTasks.Add(task);
             }
+
+            Task.WaitAll(_processTasks.ToArray());
         }
 
-        private void Proccess(TcpClient client)
+        private void Proccess(TcpClient client, int clientId)
         {
             var stream = client.GetStream();
 
             for (int i = 0; i < 1000; i++)
             {
                 // Creating data to send
-                var dataType = new DataSend()
+                var dataType = new DataType
                 {
-                    Name = "Michau",
+                    Name = $"Michau {clientId}",
                     PositionX = i,
                     PositionY = 1000 - i
                 };

@@ -10,7 +10,7 @@ namespace ServerConsoleApp
             const int port = 7777;
 
             Console.WriteLine("Starting server...");
-            var server = new TcpSimpleServer(port);
+            var server = new TcpSimpleServer(port, 4);
             Console.WriteLine($"Started listening on port: {port}");
             server.Start();
         }

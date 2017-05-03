@@ -2,7 +2,6 @@
 using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 
 namespace TcpClientServer
 {
@@ -12,10 +11,10 @@ namespace TcpClientServer
 
         public TcpSimpleClient(string address, int port)
         {
-            this._client = new TcpClient(address, port);
+            _client = new TcpClient(address, port);
         }
 
-        public DataSend Receive()
+        public DataType Receive()
         {
             // Receiving data bytes from server
             var stream = _client.GetStream();
@@ -24,10 +23,10 @@ namespace TcpClientServer
 
             // Deserializing bytes
             IFormatter formatter = new BinaryFormatter();
-            DataSend dataReceived;
+            DataType dataReceived;
             using (var ms = new MemoryStream(buffer))
             {
-                dataReceived = formatter.Deserialize(ms) as DataSend;
+                dataReceived = formatter.Deserialize(ms) as DataType;
             }
 
             // Returning the result
