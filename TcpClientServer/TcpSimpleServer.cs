@@ -78,19 +78,22 @@ namespace TcpClientServer
             var stream = client.GetStream();
 
             // Adding new player to game data
-            var player = new PlayerData($"Michau {clientId}");
+            var player = new PlayerData("Michau", clientId);
             _gameData.AddPlayer(player);
+
+            // Creating data to send
+            var dataType = new DataToSend
+            {
+                GameData = _gameData,
+                ClientId = clientId,
+                ClientState = ClientState.Accepted
+            };
 
             for (int i = 0; i < 1000; i++)
             {
-                // Creating data to send
-                var dataType = new DataToSend
-                {
-                    GameData = _gameData,
-                    ClientId = clientId,
-                    ClientState = ClientState.Accepted
-                };
-
+                // Changing data
+                player.PositionX = i;
+                player.PositionY = 1000 - i;
                 // Serializing data to bytes
                 var data = dataType.Serialize();
 

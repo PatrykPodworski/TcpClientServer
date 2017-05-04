@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using TcpClientServer.DataTypes;
 
@@ -41,6 +42,14 @@ namespace TcpClientServer
                     Log("Client was rejected");
                     _client.Close();
                     break;
+                }
+                else
+                {
+                    var player = data.GameData.Players.SingleOrDefault(p => p.Id == data.ClientId);
+                    if (player != null)
+                    {
+                        Log(player.ToString());
+                    }
                 }
             }
         }
