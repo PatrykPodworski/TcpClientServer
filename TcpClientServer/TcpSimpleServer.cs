@@ -90,7 +90,7 @@ namespace TcpClientServer
                 // Sending data
                 stream.Write(data, 0, data.Length);
 
-                Log("Data sent.");
+                Log($"Data sent to id: {clientId}.");
 
                 Thread.Sleep(1000);
             }

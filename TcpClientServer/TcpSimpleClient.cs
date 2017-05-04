@@ -32,16 +32,21 @@ namespace TcpClientServer
             {
                 // Receiving data
                 var data = Receive();
-                Console.WriteLine($"Game state: {data.GameState} Name: {data.Name}, X: {data.PositionX}, Y: {data.PositionY}");
+                Log($"Game state: {data.GameState}, Name: {data.Name}, X: {data.PositionX}, Y: {data.PositionY}");
 
                 // Checking if client was rejected
                 if (data.GameState == GameState.Rejected)
                 {
-                    Console.WriteLine("Client was rejected");
+                    Log("Client was rejected");
                     _client.Close();
                     break;
                 }
             }
+        }
+
+        private static void Log(string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }
