@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using TcpClientServer.DataTypes;
 
 namespace TcpClientServer
 {
@@ -12,12 +13,14 @@ namespace TcpClientServer
         private readonly TcpListener _listener;
         private readonly int _maxConnections;
         private readonly List<Task> _processTasks;
+        private GameData _gameData;
 
         public TcpSimpleServer(int port, int maxConnections)
         {
             _listener = new TcpListener(IPAddress.Any, port);
             _maxConnections = maxConnections;
             _processTasks = new List<Task>();
+            _gameData = new GameData(maxConnections);
         }
 
         public void Start()
@@ -50,9 +53,10 @@ namespace TcpClientServer
         {
             var stream = client.GetStream();
 
-            var dataType = new DataType
+            var dataType = new DataToSend
             {
-                GameState = GameState.Rejected
+                ClientState = ClientState.Rejected,
+                GameData = _gameData
             };
 
             // Serializing data to bytes
@@ -73,15 +77,18 @@ namespace TcpClientServer
         {
             var stream = client.GetStream();
 
+            // Adding new player to game data
+            var player = new PlayerData($"Michau {clientId}");
+            _gameData.AddPlayer(player);
+
             for (int i = 0; i < 1000; i++)
             {
                 // Creating data to send
-                var dataType = new DataType
+                var dataType = new DataToSend
                 {
-                    GameState = GameState.Accepted,
-                    Name = $"Michau {clientId}",
-                    PositionX = i,
-                    PositionY = 1000 - i
+                    GameData = _gameData,
+                    ClientId = clientId,
+                    ClientState = ClientState.Accepted
                 };
 
                 // Serializing data to bytes

@@ -3,15 +3,14 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace TcpClientServer
+namespace TcpClientServer.DataTypes
 {
     [Serializable]
-    public class DataType
+    public class DataToSend
     {
-        public GameState GameState { get; set; }
-        public string Name { get; set; }
-        public int PositionX { get; set; }
-        public int PositionY { get; set; }
+        public GameData GameData { get; set; }
+        public int ClientId { get; set; }
+        public ClientState ClientState { get; set; }
 
         public byte[] Serialize()
         {
@@ -23,22 +22,19 @@ namespace TcpClientServer
             }
         }
 
-        public static DataType Deserialize(byte[] data)
+        public static DataToSend Deserialize(byte[] data)
         {
             IFormatter formatter = new BinaryFormatter();
             using (var ms = new MemoryStream(data))
             {
-                var deserialized = formatter.Deserialize(ms) as DataType;
+                var deserialized = formatter.Deserialize(ms) as DataToSend;
                 return deserialized;
             }
         }
-    }
 
-    public enum GameState
-    {
-        Accepted,
-        Rejected,
-        Waiting,
-        Playing
+        public override string ToString()
+        {
+            return $"Client state: {ClientState}, Game state: {GameData.GameState},  Players: {GameData.Players.Count}.";
+        }
     }
 }

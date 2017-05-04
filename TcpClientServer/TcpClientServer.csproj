@@ -40,7 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataType.cs" />
+    <Compile Include="DataTypes\ClientState.cs" />
+    <Compile Include="DataTypes\DataToSend.cs" />
+    <Compile Include="DataTypes\GameData.cs" />
+    <Compile Include="DataTypes\GameState.cs" />
+    <Compile Include="DataTypes\PlayerData.cs" />
     <Compile Include="TcpSimpleClient.cs" />
     <Compile Include="TcpSimpleServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

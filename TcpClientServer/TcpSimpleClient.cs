@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using TcpClientServer.DataTypes;
 
 namespace TcpClientServer
 {
@@ -12,15 +13,15 @@ namespace TcpClientServer
             _client = new TcpClient(address, port);
         }
 
-        public DataType Receive()
+        public DataToSend Receive()
         {
             // Receiving data bytes from server
             var stream = _client.GetStream();
-            var buffer = new byte[1024];
+            var buffer = new byte[2048];
             stream.Read(buffer, 0, buffer.Length);
 
             // Deserializing bytes
-            var dataReceived = DataType.Deserialize(buffer);
+            var dataReceived = DataToSend.Deserialize(buffer);
 
             // Returning the result
             return dataReceived;
@@ -32,10 +33,10 @@ namespace TcpClientServer
             {
                 // Receiving data
                 var data = Receive();
-                Log($"Game state: {data.GameState}, Name: {data.Name}, X: {data.PositionX}, Y: {data.PositionY}");
+                Log(data.ToString());
 
                 // Checking if client was rejected
-                if (data.GameState == GameState.Rejected)
+                if (data.ClientState == ClientState.Rejected)
                 {
                     Log("Client was rejected");
                     _client.Close();
