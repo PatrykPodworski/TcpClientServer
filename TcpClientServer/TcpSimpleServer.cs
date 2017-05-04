@@ -23,12 +23,13 @@ namespace TcpClientServer
         public void Start()
         {
             _listener.Start();
+            int connectionCounter = 0;
 
             while (true)
             {
                 // Accepting clients
                 var client = _listener.AcceptTcpClient();
-                int clientId = _processTasks.Count;
+                int clientId = connectionCounter++;
 
                 Log($"Client {clientId} connected.");
 
@@ -42,8 +43,6 @@ namespace TcpClientServer
                 {
                     Task.Factory.StartNew(() => Reject(client, clientId));
                 }
-
-
             }
         }
 
