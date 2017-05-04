@@ -22,6 +22,16 @@ namespace TcpClientServer
                 return ms.ToArray();
             }
         }
+
+        public static DataType Deserialize(byte[] data)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            using (var ms = new MemoryStream(data))
+            {
+                var deserialized = formatter.Deserialize(ms) as DataType;
+                return deserialized;
+            }
+        }
     }
 
     public enum GameState
