@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -31,6 +32,24 @@ namespace TcpClientServer
 
             // Returning the result
             return dataReceived;
+        }
+
+        public void Run()
+        {
+            while (true)
+            {
+                // Receiving data
+                var data = Receive();
+                Console.WriteLine($"Game state: {data.GameState} Name: {data.Name}, X: {data.PositionX}, Y: {data.PositionY}");
+
+                // Checking if client was rejected
+                if (data.GameState == GameState.Rejected)
+                {
+                    Console.WriteLine("Client was rejected");
+                    _client.Close();
+                    break;
+                }
+            }
         }
     }
 }

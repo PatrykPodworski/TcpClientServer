@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +23,8 @@ namespace TcpClientServer
         public void Start()
         {
             _listener.Start();
-            while (_processTasks.Count < _maxConnections)
+
+            while (true)
             {
                 // Accepting clients
                 var client = _listener.AcceptTcpClient();
@@ -34,14 +32,45 @@ namespace TcpClientServer
 
                 Log($"Client {clientId} connected.");
 
-                var task = Task.Factory.StartNew(() => Proccess(client, clientId));
-                _processTasks.Add(task);
-            }
+                // Chosing correct response
+                if (_processTasks.Count < _maxConnections)
+                {
+                    var task = Task.Factory.StartNew(() => Accept(client, clientId));
+                    _processTasks.Add(task);
+                }
+                else
+                {
+                    Task.Factory.StartNew(() => Reject(client, clientId));
+                }
 
-            Task.WaitAll(_processTasks.ToArray());
+
+            }
         }
 
-        private void Proccess(TcpClient client, int clientId)
+        private void Reject(TcpClient client, int clientId)
+        {
+            var stream = client.GetStream();
+
+            var dataType = new DataType
+            {
+                GameState = GameState.Rejected
+            };
+
+            // Serializing data to bytes
+            byte[] data = dataType.Serialize();
+
+            // Sending data
+            stream.Write(data, 0, data.Length);
+
+            Log($"Data sent to id: {clientId}.");
+
+            // Closing the connection
+            stream.Close();
+            client.Close();
+
+        }
+
+        private void Accept(TcpClient client, int clientId)
         {
             var stream = client.GetStream();
 
@@ -50,20 +79,14 @@ namespace TcpClientServer
                 // Creating data to send
                 var dataType = new DataType
                 {
+                    GameState = GameState.Accepted,
                     Name = $"Michau {clientId}",
                     PositionX = i,
                     PositionY = 1000 - i
                 };
 
                 // Serializing data to bytes
-                byte[] data;
-
-                IFormatter formatter = new BinaryFormatter();
-                using (var ms = new MemoryStream())
-                {
-                    formatter.Serialize(ms, dataType);
-                    data = ms.ToArray();
-                }
+                var data = dataType.Serialize();
 
                 // Sending data
                 stream.Write(data, 0, data.Length);
@@ -73,11 +96,12 @@ namespace TcpClientServer
                 Thread.Sleep(1000);
             }
 
+            // Closing the connection
             stream.Close();
             client.Close();
         }
 
-        private void Log(string message)
+        private static void Log(string message)
         {
             Console.WriteLine(message);
         }
