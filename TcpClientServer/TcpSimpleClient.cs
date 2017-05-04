@@ -45,8 +45,7 @@ namespace TcpClientServer
                 }
                 else
                 {
-                    var player = data.GameData.Players.SingleOrDefault(p => p.Id == data.ClientId);
-                    if (player != null)
+                    foreach (var player in data.GameData.Players)
                     {
                         Log(player.ToString());
                     }
